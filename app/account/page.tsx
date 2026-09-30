@@ -1,4 +1,4 @@
-import { ExternalLink, ShieldCheck, CircleHelp, AlertTriangle } from "lucide-react";
+import { ExternalLink, CircleHelp, AlertTriangle } from "lucide-react";
 import { cluster, tradingEnabled } from "@/lib/config";
 
 const items = [

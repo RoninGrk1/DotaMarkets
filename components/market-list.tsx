@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowUpRight, RefreshCw } from "lucide-react";
+import { AlertCircle, ArrowUpRight, RefreshCw, Search } from "lucide-react";
 import { MarketListSchema, type Market } from "@/lib/market-types";
 
 type LoadState =

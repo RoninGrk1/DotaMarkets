@@ -1,4 +1,4 @@
-import { ArrowUpRight, Search, ShieldCheck, Zap } from "lucide-react";
+import { ArrowUpRight, ShieldCheck, Zap } from "lucide-react";
 import Link from "next/link";
 import { MarketList } from "@/components/market-list";
 import { tradingEnabled } from "@/lib/config";
