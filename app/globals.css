@@ -1,0 +1,61 @@
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap");
+
+:root {
+  color-scheme: dark;
+  --bg: #080810;
+  --panel: #11111c;
+  --panel-2: #171726;
+  --line: #29283b;
+  --muted: #a2a0b7;
+  --text: #f7f5ff;
+  --purple: #a855f7;
+  --pink: #e879f9;
+  --green: #4ade80;
+  --red: #fb7185;
+}
+
+* { box-sizing: border-box; }
+html { min-height: 100%; background: var(--bg); }
+body {
+  margin: 0;
+  background:
+    radial-gradient(ellipse at 50% -20%, rgba(109, 40, 217, .22), transparent 45%),
+    var(--bg);
+  color: var(--text);
+  font-family: "DM Sans", sans-serif;
+  min-height: 100vh;
+}
+a { color: inherit; text-decoration: none; }
+button, input { font: inherit; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--pink); outline-offset: 3px; }
+.shell { width: min(1160px, calc(100% - 40px)); margin-inline: auto; }
+.display { font-family: "Space Grotesk", sans-serif; letter-spacing: -.045em; }
+.muted { color: var(--muted); }
+.panel {
+  border: 1px solid var(--line);
+  background: linear-gradient(145deg, rgba(20,20,34,.96), rgba(12,12,21,.96));
+  border-radius: 18px;
+}
+.pill {
+  display: inline-flex; align-items: center; gap: 7px;
+  border: 1px solid var(--line); border-radius: 999px;
+  padding: 6px 10px; font-size: 12px; color: #d7d3e8;
+}
+.dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); }
+.primary {
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+  border: 0; border-radius: 11px; padding: 11px 15px; font-weight: 700;
+  color: white; background: linear-gradient(100deg, #7c3aed, #c026d3);
+  cursor: pointer; transition: filter .15s ease, transform .15s ease;
+}
+.primary:hover { filter: brightness(1.12); transform: translateY(-1px); }
+.primary:disabled { cursor: not-allowed; opacity: .55; transform: none; }
+.secondary {
+  border: 1px solid var(--line); border-radius: 11px; padding: 10px 14px;
+  background: rgba(255,255,255,.035); color: var(--text); cursor: pointer;
+}
+.navlink { color: #bcb9cf; font-size: 14px; }
+.navlink:hover, .navlink.active { color: white; }
+@media (max-width: 640px) {
+  .shell { width: min(100% - 28px, 1160px); }
+}
