@@ -11,3 +11,4 @@ coverage
 *.log
 target
 .anchor
+next-env.d.ts
