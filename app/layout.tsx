@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import "./globals.css";
 import { WalletProviders } from "@/components/wallet-providers";
@@ -11,15 +11,23 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false }
 };
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  viewportFit: "cover",
+  themeColor: "#080810",
+  colorScheme: "dark"
+};
+
 export default function RootLayout({ children }: Readonly<{ children: ReactNode }>) {
   return (
     <html lang="en">
       <body>
         <WalletProviders>
           <SiteHeader />
-          <main>{children}</main>
-          <footer className="shell muted" style={{ padding: "36px 0 28px", fontSize: 12, borderTop: "1px solid var(--line)", marginTop: 60 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", gap: 16, flexWrap: "wrap" }}>
+          <main className="page">{children}</main>
+          <footer className="shell muted site-footer">
+            <div className="site-footer-inner">
               <span>© {new Date().getFullYear()} DotaMarkets</span>
               <span>Markets and trading are unavailable until a verified deployment is configured.</span>
             </div>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AlertCircle, ArrowUpRight, RefreshCw, Search } from "lucide-react";
+import { AlertCircle, ArrowUpRight, RefreshCw, Search, X } from "lucide-react";
 import { MarketListSchema, type Market } from "@/lib/market-types";
 
 type LoadState =
@@ -35,55 +35,103 @@ export function MarketList() {
 
   useEffect(() => { void load(); }, []);
 
+  const trimmed = query.trim().toLowerCase();
   const markets = state.status === "ready"
-    ? state.markets.filter((market) => market.question.toLowerCase().includes(query.toLowerCase()) || market.category.toLowerCase().includes(query.toLowerCase()))
+    ? state.markets.filter((market) =>
+      market.question.toLowerCase().includes(trimmed) ||
+      market.category.toLowerCase().includes(trimmed) ||
+      market.status.toLowerCase().replaceAll("_", " ").includes(trimmed)
+    )
     : [];
 
   return (
     <div>
-      <label htmlFor="market-search" className="panel" style={{ display: "flex", alignItems: "center", gap: 10, padding: "0 14px", height: 48, marginBottom: 16 }}>
-        <Search size={17} className="muted" />
-        <input id="market-search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search markets or categories" style={{ width: "100%", background: "transparent", border: 0, outline: 0, color: "var(--text)" }} />
+      <label htmlFor="market-search" className="panel search-field">
+        <Search size={17} className="muted" aria-hidden style={{ flexShrink: 0 }} />
+        <input
+          id="market-search"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+          placeholder="Search markets or categories"
+          autoComplete="off"
+          enterKeyHint="search"
+          inputMode="search"
+        />
+        {query ? (
+          <button type="button" className="search-clear" aria-label="Clear search" onClick={() => setQuery("")}>
+            <X size={16} aria-hidden />
+          </button>
+        ) : null}
       </label>
 
-      {state.status === "loading" && <div className="panel muted" style={{ padding: 30, textAlign: "center" }}>Loading verified markets…</div>}
+      {state.status === "ready" && state.markets.length > 0 ? (
+        <p className="muted" style={{ fontSize: 12, margin: "-6px 0 14px" }}>
+          {trimmed
+            ? `${markets.length} of ${state.markets.length} market${state.markets.length === 1 ? "" : "s"}`
+            : `${state.markets.length} market${state.markets.length === 1 ? "" : "s"}`}
+        </p>
+      ) : null}
+
+      {state.status === "loading" && (
+        <div className="panel status-panel muted" role="status" aria-live="polite">
+          Loading verified markets…
+        </div>
+      )}
+
       {state.status === "error" && (
-        <div className="panel" role="status" style={{ padding: 28, display: "grid", justifyItems: "center", gap: 12, textAlign: "center" }}>
-          <AlertCircle size={24} color="#c084fc" />
+        <div className="panel status-panel" role="status">
+          <AlertCircle size={24} color="#c084fc" aria-hidden />
           <strong>Markets unavailable</strong>
-          <p className="muted" style={{ margin: 0, maxWidth: 500, lineHeight: 1.6 }}>{state.message}</p>
-          <button className="secondary" onClick={() => void load()}><RefreshCw size={14} style={{ display: "inline", marginRight: 7 }} />Try again</button>
+          <p className="muted">{state.message}</p>
+          <button type="button" className="secondary" onClick={() => void load()}>
+            <RefreshCw size={14} aria-hidden /> Try again
+          </button>
         </div>
       )}
+
       {state.status === "ready" && markets.length === 0 && (
-        <div className="panel" style={{ padding: 32, textAlign: "center" }}>
-          <div className="display" style={{ fontSize: 21, marginBottom: 8 }}>{query ? "No matching markets" : "No open markets yet"}</div>
-          <p className="muted" style={{ margin: 0 }}>{query ? "Try another search." : "No markets were returned by the verified indexer. Check back later."}</p>
-          <p className="muted" style={{ fontSize: 11, margin: "14px 0 0" }}>Indexed {new Date(state.indexedAt).toLocaleString()} · Slot {state.slot ?? "unavailable"}</p>
+        <div className="panel status-panel">
+          <div className="display" style={{ fontSize: 21 }}>{trimmed ? "No matching markets" : "No open markets yet"}</div>
+          <p className="muted">
+            {trimmed
+              ? "Try another search term, or clear the filter to see all markets."
+              : "No markets were returned by the verified indexer. Check back later."}
+          </p>
+          {trimmed ? (
+            <button type="button" className="secondary" onClick={() => setQuery("")}>Clear search</button>
+          ) : null}
+          <p className="muted" style={{ fontSize: 11 }}>
+            Indexed {new Date(state.indexedAt).toLocaleString()} · Slot {state.slot ?? "unavailable"}
+          </p>
         </div>
       )}
+
       {state.status === "ready" && markets.length > 0 && (
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit,minmax(min(100%,320px),1fr))", gap: 14 }}>
+        <div className="market-cards">
           {markets.map((market) => (
-            <Link href={`/markets/${encodeURIComponent(market.id)}`} key={market.id} className="panel" style={{ padding: 20, display: "grid", gap: 16, transition: "border-color .15s" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", gap: 12 }}>
+            <Link
+              href={`/markets/${encodeURIComponent(market.id)}`}
+              key={market.id}
+              className="panel market-card"
+            >
+              <div style={{ display: "flex", justifyContent: "space-between", gap: 12, alignItems: "flex-start", flexWrap: "wrap" }}>
                 <span className="pill">{market.category}</span>
-                <span className="muted" style={{ fontSize: 12 }}>{market.status.replaceAll("_", " ")}</span>
+                <span className="muted" style={{ fontSize: 12, paddingTop: 4 }}>{market.status.replaceAll("_", " ")}</span>
               </div>
-              <h3 style={{ fontSize: 18, lineHeight: 1.4, margin: 0, minHeight: 50 }}>{market.question}</h3>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
-                <div style={{ borderRadius: 12, padding: 12, background: "#123023", border: "1px solid #20543b" }}>
+              <h3 style={{ fontSize: "clamp(16px, 4vw, 18px)", lineHeight: 1.4, margin: 0 }}>{market.question}</h3>
+              <div className="price-grid">
+                <div className="price-yes">
                   <div style={{ color: "#86efac", fontSize: 12 }}>YES</div>
-                  <strong style={{ fontSize: 20 }}>{formatPrice(market.yesPrice)}</strong>
+                  <strong style={{ fontSize: "clamp(18px, 4vw, 20px)" }}>{formatPrice(market.yesPrice)}</strong>
                 </div>
-                <div style={{ borderRadius: 12, padding: 12, background: "#351b29", border: "1px solid #603044" }}>
+                <div className="price-no">
                   <div style={{ color: "#fda4af", fontSize: 12 }}>NO</div>
-                  <strong style={{ fontSize: 20 }}>{formatPrice(market.noPrice)}</strong>
+                  <strong style={{ fontSize: "clamp(18px, 4vw, 20px)" }}>{formatPrice(market.noPrice)}</strong>
                 </div>
               </div>
-              <div className="muted" style={{ display: "flex", justifyContent: "space-between", fontSize: 12, gap: 12 }}>
+              <div className="muted" style={{ display: "flex", justifyContent: "space-between", fontSize: 12, gap: 12, flexWrap: "wrap" }}>
                 <span>Closes {new Date(market.closeTime).toLocaleDateString()}</span>
-                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>Details <ArrowUpRight size={13} /></span>
+                <span style={{ display: "inline-flex", alignItems: "center", gap: 5 }}>Details <ArrowUpRight size={13} aria-hidden /></span>
               </div>
             </Link>
           ))}

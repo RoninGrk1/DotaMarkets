@@ -1,4 +1,5 @@
-import { ExternalLink, CircleHelp, AlertTriangle } from "lucide-react";
+import Link from "next/link";
+import { ExternalLink, CircleHelp, AlertTriangle, ArrowUpRight } from "lucide-react";
 import { cluster, tradingEnabled } from "@/lib/config";
 
 const items = [
@@ -10,21 +11,70 @@ const items = [
 
 export default function AccountPage() {
   return (
-    <div className="shell" style={{ paddingTop: 48, maxWidth: 900 }}>
-      <h1 className="display" style={{ fontSize: 42, marginBottom: 8 }}>Account & Help</h1>
-      <p className="muted" style={{ marginTop: 0 }}>Network information, product rules, and support basics.</p>
-      <div className="panel" style={{ padding: 20, marginTop: 24, display: "flex", justifyContent: "space-between", gap: 20, flexWrap: "wrap" }}>
-        <div><div className="muted" style={{ fontSize: 12 }}>Configured network</div><strong>{cluster}</strong></div>
-        <div><div className="muted" style={{ fontSize: 12 }}>Trading status</div><strong style={{ color: tradingEnabled ? "#86efac" : "#fda4af" }}>{tradingEnabled ? "Configured — integration must still be verified" : "Disabled"}</strong></div>
+    <div className="shell page-section" style={{ maxWidth: 900 }}>
+      <h1 className="display page-title">Account & Help</h1>
+      <p className="muted page-lead">Network information, product rules, and support basics.</p>
+
+      <div className="panel metric-row" style={{ marginTop: 24 }}>
+        <div className="metric">
+          <div className="metric-label">Configured network</div>
+          <strong>{cluster}</strong>
+        </div>
+        <div className="metric">
+          <div className="metric-label">Trading status</div>
+          <strong style={{ color: tradingEnabled ? "#86efac" : "#fda4af" }}>
+            {tradingEnabled ? "Configured — integration must still be verified" : "Disabled"}
+          </strong>
+        </div>
+        <div className="metric">
+          <div className="metric-label">Wallet support</div>
+          <strong>Phantom</strong>
+        </div>
       </div>
-      {!tradingEnabled && <div role="status" className="panel" style={{ padding: 16, marginTop: 14, display: "flex", gap: 12, alignItems: "start" }}><AlertTriangle color="#fbbf24" size={20} /><p className="muted" style={{ margin: 0, lineHeight: 1.6 }}>Trading is disabled by default. Do not enable it by setting an environment variable alone; a real program integration, testing, independent security review, and legal approval are required.</p></div>}
-      <div style={{ display: "grid", gap: 12, marginTop: 18 }}>
-        {items.map((item) => <section key={item.title} className="panel" style={{ padding: 22 }}><h2 style={{ fontSize: 17, marginTop: 0 }}>{item.title}</h2><p className="muted" style={{ lineHeight: 1.75, marginBottom: 0 }}>{item.body}</p></section>)}
+
+      {!tradingEnabled && (
+        <div role="status" className="panel alert-row" style={{ marginTop: 14 }}>
+          <AlertTriangle color="#fbbf24" size={20} aria-hidden style={{ flexShrink: 0, marginTop: 2 }} />
+          <p className="muted">
+            Trading is disabled by default. Do not enable it by setting an environment variable alone; a real program integration, testing, independent security review, and legal approval are required.
+          </p>
+        </div>
+      )}
+
+      <div className="stack" style={{ marginTop: 18 }}>
+        {items.map((item) => (
+          <section key={item.title} className="panel" style={{ padding: "clamp(18px, 4vw, 22px)" }}>
+            <h2 style={{ fontSize: 17, marginTop: 0 }}>{item.title}</h2>
+            <p className="muted" style={{ lineHeight: 1.75, marginBottom: 0 }}>{item.body}</p>
+          </section>
+        ))}
       </div>
-      <section className="panel" style={{ padding: 22, marginTop: 12 }}>
-        <h2 style={{ fontSize: 17, marginTop: 0 }}><CircleHelp size={17} style={{ display: "inline", marginRight: 8 }} />Useful links</h2>
-        <p className="muted" style={{ lineHeight: 1.8 }}>Support and legal documents must be published by the operator before launch.</p>
-        <a className="navlink" href="https://solana.com/docs" target="_blank" rel="noreferrer" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>Solana documentation <ExternalLink size={13} /></a>
+
+      <section className="panel" style={{ padding: "clamp(18px, 4vw, 22px)", marginTop: 12 }}>
+        <h2 style={{ fontSize: 17, marginTop: 0 }}>
+          <CircleHelp size={17} style={{ display: "inline", marginRight: 8, verticalAlign: "text-bottom" }} aria-hidden />
+          Useful links
+        </h2>
+        <p className="muted" style={{ lineHeight: 1.8 }}>
+          Support and legal documents must be published by the operator before launch.
+        </p>
+        <div className="stack" style={{ gap: 8 }}>
+          <a
+            className="navlink"
+            href="https://solana.com/docs"
+            target="_blank"
+            rel="noreferrer"
+            style={{ display: "inline-flex", alignItems: "center", gap: 6, minHeight: 44 }}
+          >
+            Solana documentation <ExternalLink size={13} aria-hidden />
+          </a>
+          <Link href="/" className="navlink" style={{ display: "inline-flex", alignItems: "center", gap: 6, minHeight: 44 }}>
+            Back to markets <ArrowUpRight size={13} aria-hidden />
+          </Link>
+          <Link href="/portfolio" className="navlink" style={{ display: "inline-flex", alignItems: "center", gap: 6, minHeight: 44 }}>
+            View portfolio <ArrowUpRight size={13} aria-hidden />
+          </Link>
+        </div>
       </section>
     </div>
   );
